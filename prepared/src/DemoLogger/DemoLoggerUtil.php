@@ -9,6 +9,8 @@
 namespace App\DemoLogger;
 
 final class DemoLoggerUtil {
+    /** @var DemoLoggerUtil */
+    private static $instance;
 
     /**
      * DemoLoggerUtil constructor: All public methods are static
@@ -17,6 +19,9 @@ final class DemoLoggerUtil {
     }
 
     public static function getInstance() {
-        return null;
+        if (!static::$instance) {
+            static::$instance = new static;
+        }
+        return static::$instance;
     }
 }
