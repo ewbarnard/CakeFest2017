@@ -1,0 +1,42 @@
+CREATE TABLE `fest_log_v01` (
+  `id`             BIGINT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `archive_month`  TINYINT(3) UNSIGNED NOT NULL DEFAULT '1'
+  COMMENT 'Partition',
+  `instance_code`  CHAR(22)            NOT NULL DEFAULT '',
+  `hostname`       VARCHAR(255)        NOT NULL DEFAULT '',
+  `instance_begin` TIMESTAMP           NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `event_time`     TIMESTAMP           NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `event_class`    VARCHAR(255)        NOT NULL DEFAULT '',
+  `event_function` VARCHAR(255)        NOT NULL DEFAULT '',
+  `event`          VARCHAR(255)        NOT NULL DEFAULT '',
+  `detail`         VARCHAR(255)        NOT NULL DEFAULT '',
+  `created`        TIMESTAMP           NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`, `archive_month`)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  /*!50100 PARTITION BY LIST (archive_month)
+(PARTITION p01 VALUES IN (1)
+  ENGINE = InnoDB,
+PARTITION p02 VALUES IN (2)
+  ENGINE = InnoDB,
+PARTITION p03 VALUES IN (3)
+  ENGINE = InnoDB,
+PARTITION p04 VALUES IN (4)
+  ENGINE = InnoDB,
+PARTITION p05 VALUES IN (5)
+  ENGINE = InnoDB,
+PARTITION p06 VALUES IN (6)
+  ENGINE = InnoDB,
+PARTITION p07 VALUES IN (7)
+  ENGINE = InnoDB,
+PARTITION p08 VALUES IN (8)
+  ENGINE = InnoDB,
+PARTITION p09 VALUES IN (9)
+  ENGINE = InnoDB,
+PARTITION p10 VALUES IN (10)
+  ENGINE = InnoDB,
+PARTITION p11 VALUES IN (11)
+  ENGINE = InnoDB,
+PARTITION p12 VALUES IN (12)
+  ENGINE = InnoDB) */
