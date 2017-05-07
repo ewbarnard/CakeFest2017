@@ -71,7 +71,8 @@ final class LookupUtil {
      */
     public static function lookup(Connection $connection, $table, $value) {
         $instance = static::getInstance($connection, $table);
-        return array_key_exists($value, $instance->cache) ? $instance->cache[$value] : $instance->runLookup($value);
+        return array_key_exists($value, $instance->cache) ?
+            $instance->cache[$value] : $instance->runLookup($value);
     }
 
     /**
