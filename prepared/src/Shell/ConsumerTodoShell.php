@@ -36,11 +36,14 @@ class ConsumerTodoShell extends Shell {
     }
 
     private function connectRabbitMQ() {
-        $this->connection = new AMQPStreamConnection('localhost', 5672, 'guest', 'guest');
+        $this->connection = new AMQPStreamConnection('localhost', 5672,
+            'guest', 'guest');
         $this->channel = $this->connection->channel();
-        $this->channel->exchange_declare(static::$exchange, 'direct', false, false, false);
+        $this->channel->exchange_declare(static::$exchange, 'direct', false,
+            false, false);
         $this->queueName = static::$exchange . '_' . static::$routingKey;
-        $this->channel->queue_declare($this->queueName, false, true, false, false);
+        $this->channel->queue_declare($this->queueName, false, true,
+            false, false);
         $this->channel->queue_bind($this->queueName, static::$exchange, static::$routingKey);
     }
 
