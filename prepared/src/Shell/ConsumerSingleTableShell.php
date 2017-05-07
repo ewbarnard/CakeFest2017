@@ -55,8 +55,8 @@ class ConsumerSingleTableShell extends Shell {
         $connection = ConnectionManager::get('fest');
 
         $sql = 'INSERT INTO fest_log_v01 
-        (archive_month, instance_code, hostname, instance_begin, event_time, event_class, event_function, event, 
-        detail, created) 
+        (archive_month, instance_code, hostname, instance_begin, event_time, 
+        event_class, event_function, event, detail, created) 
         VALUES 
         (month(curdate()), ?, ?, ?, ?, ?, ?, ?, ?, now())';
         $this->insertDemoLog = $connection->prepare($sql);
