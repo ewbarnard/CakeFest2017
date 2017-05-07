@@ -55,7 +55,8 @@ class ConsumerTodoShell extends Shell {
         $callback = function ($msg) {
             $this->processMessage($msg->body);
         };
-        $this->channel->basic_consume($this->queueName, '', false, true, false, false, $callback);
+        $this->channel->basic_consume($this->queueName, '', false,
+            true, false, false, $callback);
         while (count($this->channel->callbacks)) {
             $this->channel->wait();
         }
