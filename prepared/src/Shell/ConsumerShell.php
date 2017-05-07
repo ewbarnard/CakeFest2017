@@ -69,7 +69,8 @@ class ConsumerShell extends Shell {
     private function prepareStatements() {
         $this->db = ConnectionManager::get('fest');
 
-        $sql = 'SELECT id FROM fest_instances WHERE archive_month = ? AND instance_code = ? LIMIT 1';
+        $sql = 'SELECT id FROM fest_instances WHERE archive_month = ? 
+        AND instance_code = ? LIMIT 1';
         $this->queryInstance = $this->db->prepare($sql);
 
         $sql = 'INSERT INTO fest_instances 
@@ -79,7 +80,8 @@ class ConsumerShell extends Shell {
         $this->insertInstance = $this->db->prepare($sql);
 
         $sql = 'INSERT INTO fest_logs 
-        (archive_month, fest_instance_id, fest_class_id, fest_function_id, fest_event_id, event_time, detail, created) 
+        (archive_month, fest_instance_id, fest_class_id, fest_function_id, 
+        fest_event_id, event_time, detail, created) 
         VALUES 
         (month(curdate()), ?, ?, ?, ?, ?, ?, now())';
         $this->insertLog = $this->db->prepare($sql);
