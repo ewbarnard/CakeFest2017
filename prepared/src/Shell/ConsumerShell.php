@@ -132,7 +132,8 @@ class ConsumerShell extends Shell {
             $id = (int)$row['id'];
         } else {
             $server = $this->message['meta']['server'];
-            $serverId = LookupUtil::lookup($this->db, 'fest_servers', $server);
+            $serverId = LookupUtil::lookup($this->db,
+                'fest_servers', $server);
             $begin = $this->timestamp('meta');
             $parms = [$serverId, $code, $begin];
             $this->insertInstance->execute($parms);
