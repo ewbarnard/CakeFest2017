@@ -20,13 +20,17 @@ use PhpAmqpLib\Message\AMQPMessage;
 
 class BenchmarkShell extends Shell {
     private static $benchRows = 2000;
+
     private static $exchange = 'fest';
+
     private static $routingKey = 'fest_benchmark';
 
     /** @var array */
     private $data;
+
     /** @var AMQPStreamConnection */
     private $connection;
+
     /** @var AMQPChannel */
     private $channel;
 
@@ -40,30 +44,6 @@ class BenchmarkShell extends Shell {
         $this->bulkInsertSingle($baseRate);
         $this->rabbit($baseRate);
         $this->verbose('Benchmark: Done');
-    }
-
-    private function connectRabbitMQ() {
-        if (!$this->connection) {
-            $this->connection = new AMQPStreamConnection('localhost', 5672, 'guest', 'guest');
-        }
-        if (!$this->channel) {
-            $this->channel = $this->connection->channel();
-        }
-        $this->channel->exchange_declare(static::$exchange, 'direct', false, false, false);
-    }
-
-    private function rabbit($baseRate) {
-        $begin = microtime(true);
-        foreach ($this->data as $data) {
-            $message = new AMQPMessage(json_encode($data));
-            $this->channel->basic_publish($message, static::$exchange, static::$routingKey);
-        }
-        $interval = (microtime(true) - $begin);
-        $per = (float)static::$benchRows / $interval;
-        $elapsed = sprintf('%.2f', $interval * 1000.0);
-        $speedup = sprintf(', %.0f%% speedup', $per / $baseRate * 100.0);
-        $this->verbose(__FUNCTION__ . ': ' . $elapsed . ' ms, ' .
-            sprintf('%.3f rows per second', $per) . $speedup);
     }
 
     private function buildData() {
@@ -81,6 +61,16 @@ class BenchmarkShell extends Shell {
                 'detail' => 'Detail ' . random_int(0, 65535),
             ];
         }
+    }
+
+    private function connectRabbitMQ() {
+        if (!$this->connection) {
+            $this->connection = new AMQPStreamConnection('localhost', 5672, 'guest', 'guest');
+        }
+        if (!$this->channel) {
+            $this->channel = $this->connection->channel();
+        }
+        $this->channel->exchange_declare(static::$exchange, 'direct', false, false, false);
     }
 
     private function modelSingle() {
@@ -105,24 +95,7 @@ class BenchmarkShell extends Shell {
         $interval = (microtime(true) - $begin);
         $per = (float)static::$benchRows / $interval;
         $elapsed = sprintf('%.2f', $interval * 1000.0);
-        $speedup = sprintf(', %.0f%% speedup', $per / $baseRate * 100.0);
-        $this->verbose(__FUNCTION__ . ': ' . $elapsed . ' ms, ' .
-            sprintf('%.3f rows per second', $per) . $speedup);
-    }
-
-    private function bulkInsertSingle($baseRate) {
-        $begin = microtime(true);
-        $table = TableRegistry::get('FestV02Benchmarks');
-        $query = $table->query();
-        $query->insert(array_keys($this->data[0]));
-        foreach ($this->data as $data) {
-            $query->values($data);
-        }
-        $query->execute();
-        $interval = (microtime(true) - $begin);
-        $per = (float)static::$benchRows / $interval;
-        $elapsed = sprintf('%.2f', $interval * 1000.0);
-        $speedup = sprintf(', %.0f%% speedup', $per / $baseRate * 100.0);
+        $speedup = sprintf(', %.2fX speedup', $per / $baseRate);
         $this->verbose(__FUNCTION__ . ': ' . $elapsed . ' ms, ' .
             sprintf('%.3f rows per second', $per) . $speedup);
     }
@@ -143,7 +116,38 @@ class BenchmarkShell extends Shell {
         $interval = (microtime(true) - $begin);
         $per = (float)static::$benchRows / $interval;
         $elapsed = sprintf('%.2f', $interval * 1000.0);
-        $speedup = sprintf(', %.0f%% speedup', $per / $baseRate * 100.0);
+        $speedup = sprintf(', %.2fX speedup', $per / $baseRate);
+        $this->verbose(__FUNCTION__ . ': ' . $elapsed . ' ms, ' .
+            sprintf('%.3f rows per second', $per) . $speedup);
+    }
+
+    private function bulkInsertSingle($baseRate) {
+        $begin = microtime(true);
+        $table = TableRegistry::get('FestV02Benchmarks');
+        $query = $table->query();
+        $query->insert(array_keys($this->data[0]));
+        foreach ($this->data as $data) {
+            $query->values($data);
+        }
+        $query->execute();
+        $interval = (microtime(true) - $begin);
+        $per = (float)static::$benchRows / $interval;
+        $elapsed = sprintf('%.2f', $interval * 1000.0);
+        $speedup = sprintf(', %.2fX speedup', $per / $baseRate);
+        $this->verbose(__FUNCTION__ . ': ' . $elapsed . ' ms, ' .
+            sprintf('%.3f rows per second', $per) . $speedup);
+    }
+
+    private function rabbit($baseRate) {
+        $begin = microtime(true);
+        foreach ($this->data as $data) {
+            $message = new AMQPMessage(json_encode($data));
+            $this->channel->basic_publish($message, static::$exchange, static::$routingKey);
+        }
+        $interval = (microtime(true) - $begin);
+        $per = (float)static::$benchRows / $interval;
+        $elapsed = sprintf('%.2f', $interval * 1000.0);
+        $speedup = sprintf(', %.2fX speedup', $per / $baseRate);
         $this->verbose(__FUNCTION__ . ': ' . $elapsed . ' ms, ' .
             sprintf('%.3f rows per second', $per) . $speedup);
     }
